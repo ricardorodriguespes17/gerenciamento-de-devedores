@@ -1,11 +1,9 @@
+import Home from "./pages/Home";
+
 import "./styles/global.css";
 
 function App() {
-  return (
-    <div>
-      <h1>Hello</h1>
-    </div>
-  );
+  return <Home />;
 }
 
 export default App;

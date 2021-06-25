@@ -1,0 +1,130 @@
+.home-page {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+}
+
+.home-page .side-bar {
+  width: 200px;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px;
+  gap: 10px;
+
+  overflow: auto;
+}
+
+.home-page .side-bar .client-box {
+  width: 100%;
+  min-height: 50px;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  padding-left: 5px;
+
+  border: 1px solid #000;
+
+  transition: 150ms;
+
+  cursor: pointer;
+}
+
+.home-page .side-bar .client-box:hover {
+  filter: brightness(0.8);
+}
+
+.home-page main {
+  flex: 1;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 10px;
+  gap: 10px;
+}
+
+.home-page main .edit-data {
+  width: 100%;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 50px 100px;
+
+  border: 1px solid #000;
+}
+
+.home-page main .edit-data .input {
+  margin-bottom: 10px;
+  margin-top: 3px;
+  width: 300px;
+  height: 30px;
+  padding: 3px;
+
+  border: 1px solid #000;
+}
+
+.home-page main .edit-data .input.value {
+  width: 200px;
+}
+
+.home-page main .edit-data .box-actions {
+  flex: 1;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+
+  gap: 10px;
+}
+
+.home-page main .edit-data .box-actions button {
+  width: 100px;
+  height: 30px;
+
+  background-color: transparent;
+  border: 1px solid #000;
+
+  transition: 150ms;
+
+  cursor: pointer;
+}
+
+.home-page main .edit-data .box-actions button[type="reset"]:hover {
+  background-color: #cd0000;
+  color: #fff;
+  border-color: #fff;
+}
+
+.home-page main .edit-data .box-actions button[type="submit"]:hover {
+  background-color: #005500;
+  color: #fff;
+  border-color: #fff;
+}
+
+.home-page main .submit {
+  width: 150px;
+  height: 30px;
+
+  background-color: transparent;
+  border: 1px solid #000;
+
+  transition: 150ms;
+
+  cursor: pointer;
+}
+
+.home-page main .submit:hover {
+  background-color: #0000cd;
+  color: #fff;
+  border-color: #fff;
+}
