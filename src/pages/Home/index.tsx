@@ -1,112 +1,85 @@
 import { FormEvent, useState, useEffect } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
 
+import { apiClients, api } from "../../services/api";
+
 import "./styles.css";
 
+const UUID = process.env.REACT_APP_UUID;
+
 interface DebtType {
-  id: string;
-  clientId: string;
-  reason: string;
-  value: string;
+  _id: number;
+  idUsuario: number;
+  motivo: string;
+  valor: number;
+  criado: string;
 }
 
 interface ClientType {
-  id: string;
+  id: number;
   name: string;
 }
 
 export default function Home() {
-  const [CLIENTS, SETCLIENTS] = useState([
-    { id: "0", name: "Fulano" },
-    { id: "1", name: "Ciclano" },
-    { id: "2", name: "Beltrano" },
-  ]);
-
-  const [DEBTS, SETDEBTS] = useState([
-    {
-      id: "0",
-      clientId: "0",
-      reason: "Dívida do cartão de crédito",
-      value: "R$ 1000,00",
-    },
-    {
-      id: "1",
-      clientId: "0",
-      reason: "Dívida do cartão de crédito",
-      value: "R$ 2500,00",
-    },
-    {
-      id: "2",
-      clientId: "1",
-      reason: "Dívida do cartão de crédito",
-      value: "R$ 340,00",
-    },
-    {
-      id: "3",
-      clientId: "2",
-      reason: "Dívida do cartão de crédito",
-      value: "R$ 400,00",
-    },
-  ]);
-
   const [listType, setListType] = useState<"client" | "debt">("client");
 
-  const [clients, setClients] = useState<ClientType[]>(
-    CLIENTS.filter(
-      (client) => DEBTS.filter((debt) => debt.clientId === client.id).length > 0
-    )
-  );
-
+  const [clients, setClients] = useState<ClientType[]>([]);
   const [debts, setDebts] = useState<DebtType[]>([]);
+  const [clientDebts, setClientDebts] = useState<DebtType[]>([]);
+  const [clientsWithDebts, setClientsWithDebts] = useState<ClientType[]>([]);
 
   const [debtSelected, setDebtSelected] = useState<DebtType>();
 
-  const [client, setClient] = useState("");
+  const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
   const [value, setValue] = useState("");
 
   useEffect(() => {
-    if (debtSelected) {
-      setClient(debtSelected.clientId);
-      setReason(debtSelected.reason);
-      setValue(debtSelected.value);
-    } else {
-      setClient("");
-      setReason("");
-      setValue("");
+    apiClients.get("/users").then((res) => {
+      setClients(res.data);
+    });
+
+    loadDebts();
+  }, []);
+
+  useEffect(() => {
+    if (clients.length > 0) {
+      setClientsWithDebts(
+        clients.filter((client) =>
+          debts.map((item) => item.idUsuario).includes(client.id)
+        )
+      );
     }
+  }, [clients, debts]);
+
+  useEffect(() => {
+    if (debtSelected) {
+      setUserId(debtSelected.idUsuario.toString());
+      setReason(debtSelected.motivo);
+      setValue(debtSelected.valor.toString());
+    } else {
+      clearForm();
+    }
+
+    // eslint-disable-next-line
   }, [debtSelected]);
+
+  function loadDebts() {
+    api.get(`/divida?uuid=${UUID}`).then((res) => {
+      if (res.data.success) {
+        const debts = res.data.result as DebtType[];
+        setDebts(debts);
+      }
+    });
+  }
 
   function onSave(e: FormEvent) {
     e.preventDefault();
 
-    SETDEBTS(
-      DEBTS.map((item) => {
-        if (item.id === debtSelected?.id) {
-          return { ...item, clientId: client, reason, value };
-        }
+    const valor = Number(value);
+    const idUsuario = Number(userId);
 
-        return item;
-      })
-    );
-
-    setClient("");
-    setReason("");
-    setValue("");
-
-    backToClientList();
-  }
-
-  function onDelete(id: string) {
-    backToClientList();
-
-    SETDEBTS(DEBTS.filter((item) => item.id !== id));
-  }
-
-  function onCreate(e: FormEvent) {
-    e.preventDefault();
-
-    if (client === "") {
+    if (!idUsuario) {
       alert("Selecione um cliente");
       return;
     }
@@ -116,31 +89,82 @@ export default function Home() {
       return;
     }
 
-    if (value.trim() === "") {
+    if (isNaN(valor)) {
       alert("Defina o valor da dívida");
       return;
     }
 
-    SETDEBTS(
-      DEBTS.concat({
-        clientId: client,
-        reason,
-        value,
-        id: Math.random().toString(),
+    api
+      .put(`/divida/${debtSelected?._id}?uuid=${UUID}`, {
+        idUsuario,
+        motivo: reason,
+        valor: valor,
       })
-    );
+      .then(() => {
+        loadDebts();
+        clearForm();
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
 
-    setClient("");
-    setReason("");
-    setValue("");
-
-    backToClientList();
+    clearForm();
   }
 
-  function selectClient(id: string) {
+  function onDelete(id: number) {
+    backToClientList();
+
+    api
+      .delete(`/divida/${id}?uuid=${UUID}`)
+      .then(() => {
+        loadDebts();
+        clearForm();
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
+  }
+
+  function onCreate(e: FormEvent) {
+    e.preventDefault();
+
+    const valor = Number(value);
+    const idUsuario = Number(userId);
+
+    if (!idUsuario) {
+      alert("Selecione um cliente");
+      return;
+    }
+
+    if (reason.trim() === "") {
+      alert("Escreva o motivo da dívida");
+      return;
+    }
+
+    if (isNaN(valor)) {
+      alert("Defina o valor da dívida");
+      return;
+    }
+
+    api
+      .post(`/divida?uuid=${UUID}`, {
+        idUsuario,
+        motivo: reason,
+        valor: valor,
+      })
+      .then(() => {
+        loadDebts();
+        clearForm();
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
+  }
+
+  function selectClient(id: number) {
     setListType("debt");
 
-    setDebts(DEBTS.filter((item) => item.clientId === id));
+    setClientDebts(debts.filter((item) => item.idUsuario === id));
   }
 
   function backToClientList() {
@@ -149,10 +173,18 @@ export default function Home() {
     setDebtSelected(undefined);
   }
 
-  function selectDebt(id: string) {
-    const debt = debts.find((item) => item.id === id);
+  function selectDebt(id: number) {
+    const debt = debts.find((item) => item._id === id);
 
     setDebtSelected(debt);
+  }
+
+  function clearForm() {
+    setUserId("");
+    setReason("");
+    setValue("");
+
+    backToClientList();
   }
 
   return (
@@ -162,10 +194,11 @@ export default function Home() {
           <>
             <h2>Devedores</h2>
             <div className="side-bar-list">
-              {clients.map((item) => (
+              {clientsWithDebts.map((item) => (
                 <button
                   className="box-list"
-                  onClick={() => selectClient(item.id)}
+                  onClick={() => selectClient(Number(item.id))}
+                  key={item.id}
                 >
                   {item.name}
                 </button>
@@ -181,17 +214,18 @@ export default function Home() {
                 Voltar
               </button>
 
-              {debts.map((item) => (
-                <div
-                  onClick={() => selectDebt(item.id)}
+              {clientDebts.map((item) => (
+                <button
+                  key={item._id}
+                  onClick={() => selectDebt(item._id)}
                   className={`${
-                    debtSelected?.id === item.id
+                    debtSelected?._id === item._id
                       ? "box-list selected"
                       : "box-list"
                   }`}
                 >
-                  {item.reason}
-                </div>
+                  {item.motivo}
+                </button>
               ))}
             </div>
           </>
@@ -203,15 +237,17 @@ export default function Home() {
           <label>Cliente</label>
           <select
             className="input"
-            value={client}
-            onChange={(event) => setClient(event.target.value)}
+            value={userId}
+            onChange={(event) => setUserId(event.target.value)}
           >
             <option hidden value="">
               Usuários do JSONPlaceholder
             </option>
 
             {clients.map((item) => (
-              <option value={item.id}>{item.name}</option>
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
             ))}
           </select>
 
@@ -233,7 +269,7 @@ export default function Home() {
 
           <div className="box-actions">
             {debtSelected && (
-              <button type="button" onClick={() => onDelete(debtSelected.id)}>
+              <button type="button" onClick={() => onDelete(debtSelected._id)}>
                 Excluir
               </button>
             )}
