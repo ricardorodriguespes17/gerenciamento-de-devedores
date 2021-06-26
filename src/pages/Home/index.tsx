@@ -56,7 +56,12 @@ export default function Home() {
     if (debtSelected) {
       setUserId(debtSelected.idUsuario.toString());
       setReason(debtSelected.motivo);
-      setValue(debtSelected.valor.toString());
+      setValue(
+        Intl.NumberFormat("pt-br", {
+          currency: "BRL",
+          style: "currency",
+        }).format(debtSelected.valor)
+      );
     } else {
       clearForm();
     }
@@ -65,18 +70,27 @@ export default function Home() {
   }, [debtSelected]);
 
   function loadDebts() {
-    api.get(`/divida?uuid=${UUID}`).then((res) => {
-      if (res.data.success) {
-        const debts = res.data.result as DebtType[];
-        setDebts(debts);
-      }
-    });
+    api
+      .get(`/divida?uuid=${UUID}`)
+      .then((res) => {
+        if (res.data.success) {
+          const debts = res.data.result as DebtType[];
+          setDebts(debts);
+        }
+      })
+      .catch((err) => {
+        console.log({ err });
+
+        if (err.message && err.message === "Network Error") {
+          alert("Sem conexão");
+        }
+      });
   }
 
   function onSave(e: FormEvent) {
     e.preventDefault();
 
-    const valor = Number(value);
+    const valor = Number(value.replace("R$", "").replace(",", "."));
     const idUsuario = Number(userId);
 
     if (!idUsuario) {
@@ -106,6 +120,10 @@ export default function Home() {
       })
       .catch((err) => {
         console.log({ err });
+
+        if (err.message && err.message === "Network Error") {
+          alert("Sem conexão");
+        }
       });
 
     clearForm();
@@ -128,7 +146,7 @@ export default function Home() {
   function onCreate(e: FormEvent) {
     e.preventDefault();
 
-    const valor = Number(value);
+    const valor = Number(value.replace("R$", ""));
     const idUsuario = Number(userId);
 
     if (!idUsuario) {
@@ -158,6 +176,10 @@ export default function Home() {
       })
       .catch((err) => {
         console.log({ err });
+
+        if (err.message && err.message === "Network Error") {
+          alert("Sem conexão");
+        }
       });
   }
 

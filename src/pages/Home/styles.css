@@ -8,14 +8,17 @@
 /* Inicio da estilizacao da side bar */
 
 .home-page .side-bar {
-  width: 200px;
+  width: 300px;
   height: 100%;
 
   display: flex;
   flex-direction: column;
 
-  padding: 10px;
-  gap: 10px;
+  padding: 15px;
+  gap: 15px;
+
+  background-color: var(--secondary-color);
+  color: #fff;
 }
 
 .home-page .side-bar .go-back {
@@ -26,13 +29,15 @@
 
   display: flex;
   align-items: center;
-  justify-content: center;
 
   gap: 5px;
 
   cursor: pointer;
 
-  border: 1px solid #000;
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  color: #fff;
 }
 
 .home-page .side-bar .go-back .icon {
@@ -59,9 +64,13 @@
   display: flex;
   align-items: center;
 
-  padding-left: 5px;
+  padding-left: 10px;
 
-  border: 1px solid #000;
+  background-color: #00000060;
+  color: #fff;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
 
   transition: 150ms background;
 
@@ -69,13 +78,12 @@
 }
 
 .home-page .side-bar .side-bar-list .box-list:hover {
-  background-color: #ddd;
+  background-color: #00000020;
 }
 
 .home-page .side-bar .side-bar-list .box-list.selected {
-  background-color: #0000cd;
+  background-color: var(--primary-color);
   color: #fff;
-  border-color: #fff;
 }
 
 /* Fim da estilizacao da side bar */
@@ -89,31 +97,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   padding: 10px;
   gap: 10px;
+
+  /* background-color: var(--primary-color); */
+  background-color: #fff;
+  color: var(--secondary-color);
 }
 
 .home-page main .edit-data {
-  width: 100%;
-  flex: 1;
-
   display: flex;
   flex-direction: column;
-
-  padding: 50px 100px;
-
-  border: 1px solid #000;
 }
 
 .home-page main .edit-data .input {
-  margin-bottom: 10px;
-  margin-top: 3px;
   width: 300px;
   height: 30px;
-  padding: 3px;
 
-  border: 1px solid #000;
+  margin-bottom: 10px;
+  margin-top: 3px;
+  padding-left: 10px;
+
+  border: 1px solid var(--thirtiary-color);
+  border-radius: 30px;
+  outline: 0;
 }
 
 .home-page main .edit-data .input.value {
@@ -121,11 +130,11 @@
 }
 
 .home-page main .edit-data .box-actions {
-  flex: 1;
-
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+
+  margin-top: 50px;
 
   gap: 10px;
 }
@@ -134,42 +143,46 @@
   width: 100px;
   height: 30px;
 
-  background-color: transparent;
-  border: 1px solid #000;
+  background-color: var(--secondary-color);
+  color: #fff;
+
+  border: 1px solid transparent;
+  border-radius: 30px;
 
   transition: 150ms;
 
   cursor: pointer;
 }
 
-.home-page main .edit-data .box-actions button[type="reset"]:hover {
-  background-color: #cd0000;
+.home-page main .edit-data .box-actions button:hover {
+  background-color: var(--primary-color);
   color: #fff;
-  border-color: #fff;
-}
-
-.home-page main .edit-data .box-actions button[type="submit"]:hover {
-  background-color: #005500;
-  color: #fff;
-  border-color: #fff;
-}
-
-.home-page main .submit {
-  width: 150px;
-  height: 30px;
-
-  background-color: transparent;
-  border: 1px solid #000;
-
-  transition: 150ms;
-
-  cursor: pointer;
-}
-
-.home-page main .submit:hover {
-  background-color: #0000cd;
-  color: #fff;
-  border-color: #fff;
 }
 
 /* Fim da estilizacao do conteudo principal */
+
+@media (max-width: 700px) {
+  .home-page .side-bar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 550px) {
+  .home-page {
+    flex-direction: column;
+  }
+
+  .home-page .side-bar {
+    width: 100%;
+    height: fit-content;
+  }
+
+  .home-page main {
+    padding: 30px 15px;
+  }
+
+  .home-page main .edit-data,
+  .home-page main .edit-data .input {
+    max-width: 100%;
+  }
+}
