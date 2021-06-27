@@ -122,6 +122,8 @@ export default function Home() {
       .then(() => {
         loadDebts();
         clearForm();
+
+        setModal({ show: true, message: "Editada com sucesso" });
       })
       .catch((err) => {
         if (err.message && err.message === "Network Error") {
@@ -175,7 +177,7 @@ export default function Home() {
         loadDebts();
         clearForm();
 
-        setModal({ show: true, message: "Criado com sucesso" });
+        setModal({ show: true, message: "Criada com sucesso" });
       })
       .catch((err) => {
         if (err.message && err.message === "Network Error") {
