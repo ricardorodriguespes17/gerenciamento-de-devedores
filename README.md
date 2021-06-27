@@ -32,7 +32,7 @@ Usando também as bibliotecas [React Icons](https://react-icons.github.io/react-
 
 Para fazer as requisições ao backend é necessário ter um UUID.
 
-** É necessário que o UUID esteja em uma variável local **
+**É necessário que o UUID esteja em uma variável local**
 
 Seguindo o [exemplo](https://github.com/ricardorodriguespes17/gerenciamento-de-devedores/blob/master/.env.example).
 
