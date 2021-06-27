@@ -1,0 +1,20 @@
+.loading-component {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+
+  border-radius: 50%;
+  border: 5px solid var(--default-color);
+  border-bottom: 5px solid var(--primary-color);
+
+  margin: auto;
+
+  animation: spin 900ms infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

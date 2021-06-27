@@ -1,5 +1,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
+import Loading from "../../components/Loading";
+import Modal from "../../components/Modal";
 
 import { apiClients, api } from "../../services/api";
 
@@ -33,6 +35,14 @@ export default function Home() {
   const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
   const [value, setValue] = useState("");
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [modal, setModal] = useState({ show: false, message: "" });
+
+  const [userIdError, setUserIdError] = useState(false);
+  const [reasonError, setReasonError] = useState(false);
+  const [valueError, setValueError] = useState(false);
 
   useEffect(() => {
     apiClients.get("/users").then((res) => {
@@ -70,6 +80,8 @@ export default function Home() {
   }, [debtSelected]);
 
   function loadDebts() {
+    setIsLoading(true);
+
     api
       .get(`/divida?uuid=${UUID}`)
       .then((res) => {
@@ -82,47 +94,40 @@ export default function Home() {
         console.log({ err });
 
         if (err.message && err.message === "Network Error") {
-          alert("Sem conexão");
+          setModal({ show: true, message: "Sem conexão" });
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
 
   function onSave(e: FormEvent) {
     e.preventDefault();
 
-    const valor = Number(value.replace("R$", "").replace(",", "."));
-    const idUsuario = Number(userId);
+    const values = checkInput();
 
-    if (!idUsuario) {
-      alert("Selecione um cliente");
+    if (!values) {
       return;
     }
 
-    if (reason.trim() === "") {
-      alert("Escreva o motivo da dívida");
-      return;
-    }
-
-    if (isNaN(valor)) {
-      alert("Defina o valor da dívida");
-      return;
-    }
+    const { idUsuario, valor, motivo } = values;
 
     api
       .put(`/divida/${debtSelected?._id}?uuid=${UUID}`, {
         idUsuario,
-        motivo: reason,
-        valor: valor,
+        motivo,
+        valor,
       })
       .then(() => {
         loadDebts();
         clearForm();
       })
       .catch((err) => {
-        console.log({ err });
-
         if (err.message && err.message === "Network Error") {
-          alert("Sem conexão");
+          setModal({ show: true, message: "Sem conexão" });
+        } else {
+          setModal({ show: true, message: "Erro ao editar dívida" });
         }
       });
 
@@ -137,48 +142,46 @@ export default function Home() {
       .then(() => {
         loadDebts();
         clearForm();
+
+        setModal({ show: true, message: "Excluída com sucesso" });
       })
       .catch((err) => {
-        console.log({ err });
+        if (err.message && err.message === "Network Error") {
+          setModal({ show: true, message: "Sem conexão" });
+        } else {
+          setModal({ show: true, message: "Erro ao excluir dívida" });
+        }
       });
   }
 
   function onCreate(e: FormEvent) {
     e.preventDefault();
 
-    const valor = Number(value.replace("R$", ""));
-    const idUsuario = Number(userId);
+    const values = checkInput();
 
-    if (!idUsuario) {
-      alert("Selecione um cliente");
+    if (!values) {
       return;
     }
 
-    if (reason.trim() === "") {
-      alert("Escreva o motivo da dívida");
-      return;
-    }
-
-    if (isNaN(valor)) {
-      alert("Defina o valor da dívida");
-      return;
-    }
+    const { idUsuario, valor, motivo } = values;
 
     api
       .post(`/divida?uuid=${UUID}`, {
         idUsuario,
-        motivo: reason,
-        valor: valor,
+        motivo,
+        valor,
       })
       .then(() => {
         loadDebts();
         clearForm();
+
+        setModal({ show: true, message: "Criado com sucesso" });
       })
       .catch((err) => {
-        console.log({ err });
-
         if (err.message && err.message === "Network Error") {
-          alert("Sem conexão");
+          setModal({ show: true, message: "Sem conexão" });
+        } else {
+          setModal({ show: true, message: "Erro ao criar dívida" });
         }
       });
   }
@@ -201,6 +204,41 @@ export default function Home() {
     setDebtSelected(debt);
   }
 
+  function checkInput() {
+    const numberValue = Number(
+      value.replace("R$", "").replace(".", "").replace(",", ".")
+    );
+    const numberUserId = Number(userId);
+
+    const reasonTrim = reason.trim();
+
+    if (!numberUserId || isNaN(numberUserId)) {
+      setUserIdError(true);
+      setTimeout(() => {
+        setUserIdError(false);
+      }, 2000);
+      return null;
+    }
+
+    if (reasonTrim === "") {
+      setReasonError(true);
+      setTimeout(() => {
+        setReasonError(false);
+      }, 2000);
+      return null;
+    }
+
+    if (value.trim() === "" || isNaN(numberValue)) {
+      setValueError(true);
+      setTimeout(() => {
+        setValueError(false);
+      }, 2000);
+      return null;
+    }
+
+    return { valor: numberValue, idUsuario: numberUserId, motivo: reasonTrim };
+  }
+
   function clearForm() {
     setUserId("");
     setReason("");
@@ -211,10 +249,24 @@ export default function Home() {
 
   return (
     <div className="home-page">
+      {modal.show && (
+        <Modal
+          message={modal.message}
+          close={() => setModal({ show: false, message: "" })}
+        />
+      )}
+
       <div className="side-bar">
         {listType === "client" ? (
           <>
             <h2>Devedores</h2>
+
+            {isLoading && <Loading />}
+
+            {!isLoading && clientsWithDebts.length === 0 && (
+              <p>Não há devedores</p>
+            )}
+
             <div className="side-bar-list">
               {clientsWithDebts.map((item) => (
                 <button
@@ -256,38 +308,53 @@ export default function Home() {
 
       <main>
         <form className="edit-data" onSubmit={debtSelected ? onSave : onCreate}>
-          <label>Cliente</label>
-          <select
-            className="input"
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
-          >
-            <option hidden value="">
-              Usuários do JSONPlaceholder
-            </option>
-
-            {clients.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
+          <div className="box-input">
+            <label>Cliente</label>
+            <select
+              className="input"
+              value={userId}
+              onChange={(event) => setUserId(event.target.value)}
+            >
+              <option hidden value="">
+                Usuários do JSONPlaceholder
               </option>
-            ))}
-          </select>
 
-          <label>Motivo</label>
-          <input
-            className="input"
-            placeholder="Ex: dívida do cartão de crédito"
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-          />
+              {clients.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            {userIdError && (
+              <label className="input-error">Selecione um cliente</label>
+            )}
+          </div>
 
-          <label>Valor</label>
-          <input
-            className="input value"
-            placeholder="Ex: R$ 500,00"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-          />
+          <div className="box-input">
+            <label>Motivo</label>
+            <input
+              className="input"
+              placeholder="Ex: dívida do cartão de crédito"
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+            />
+            {reasonError && (
+              <label className="input-error">Escreva o motivo da dívida</label>
+            )}
+          </div>
+
+          <div className="box-input">
+            <label>Valor</label>
+            <input
+              className="input value"
+              placeholder="Ex: R$ 500,00"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+            />
+            {valueError && (
+              <label className="input-error">Defina um valor válido</label>
+            )}
+          </div>
 
           <div className="box-actions">
             {debtSelected && (

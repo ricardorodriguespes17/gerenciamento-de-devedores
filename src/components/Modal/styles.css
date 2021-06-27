@@ -1,0 +1,42 @@
+.modal-component {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #00000090;
+}
+
+.modal-component .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #fff;
+  padding: 30px;
+
+  border-radius: 30px;
+}
+
+.modal-component .content button {
+  width: 100px;
+  height: 30px;
+
+  margin-top: 20px;
+
+  border-radius: 30px;
+  border: 1px solid transparent;
+
+  background-color: var(--secondary-color);
+  color: #fff;
+
+  cursor: pointer;
+}
+
+.modal-component .content button:hover {
+  background-color: var(--primary-color);
+}
