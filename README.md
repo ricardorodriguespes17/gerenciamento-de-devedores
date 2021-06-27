@@ -2,6 +2,10 @@
 
 O objetivo desse projeto é o relacionamento de dívidas com clientes, cosumindo a API do [JSONPlaceholder](https://jsonplaceholder.typicode.com/) para obter informações dos clientes e outra API para gerenciamento das dívidas.
 
+## Acesso
+
+https://gerenciamento-de-devedores.vercel.app
+
 ## Detalhes
 
 Cada usuário é uma pessoa com dívidas, na qual iremos fazer o
