@@ -1,45 +1,56 @@
-# Getting Started with Create React App
+# Gerenciador de devedores
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+O objetivo desse projeto é o relacionamento de dívidas com clientes, cosumindo a API do [JSONPlaceholder](https://jsonplaceholder.typicode.com/) para obter informações dos clientes e outra API para gerenciamento das dívidas.
 
-## Available Scripts
+## Detalhes
 
-In the project directory, you can run:
+Cada usuário é uma pessoa com dívidas, na qual iremos fazer o
+cadastro no sistema.
 
-### `yarn start`
+### Operações básicas
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Adicionar nova dívida, informando qual cliente está relacionada a ela;
+2. Obter detalhes de uma dívida;
+3. Editar uma dívida;
+4. Deletar uma dívida.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Detalhes da tela
 
-### `yarn test`
+- Será mostrada uma lista lateral com os devedores (clientes com dívida), sendo possível clica nesse devedor e mostrar todas as dívídas dele.
+- Cada dívida pode ser clicada e aparecerá detalhes dela no formulário para possível edição ou exclusão da mesma.
+- A edição é feita modificando os dados presentes no formulário e clicando no botão "Salvar".
+- A exclusão é feita clicando no botão "Excluir".
+- É possível adicionar uma nova dívida a partir do formulário, preenchendo os determinados dados e clicando no botão "Criar".
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Desenvolvimento
 
-### `yarn build`
+Aplicação frontend desenvolvida com o framework [ReactJS](https://pt-br.reactjs.org) com [Typescript](https://www.typescriptlang.org).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Usando também as bibliotecas [React Icons](https://react-icons.github.io/react-icons/search) para uso de icones, [Axios](https://axios-http.com) para fazer chamadas às APIs.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Acesso ao Backend
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Para fazer as requisições ao backend é necessário ter um UUID.
 
-### `yarn eject`
+** É necessário que o UUID esteja em uma variável local **
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Instalação
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Com o código clonado no computador, use o seguinte comando para instalar os pacotes:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+npm install
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Após o termino da instalação, use o seguinte comando para iniciar a aplicação localmente:
 
-## Learn More
+```
+npm start
+```
+
+A aplicação rodará se possível em http://localhost:3000.
+
+## Aprenda mais sobre React
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
