@@ -1,5 +1,6 @@
 import { FormEvent, useState, useEffect } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
+import { FaMoneyBillWave } from "react-icons/fa";
 import Loading from "../../components/Loading";
 import Modal from "../../components/Modal";
 
@@ -35,6 +36,7 @@ export default function Home() {
   const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
   const [value, setValue] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,9 +57,11 @@ export default function Home() {
   useEffect(() => {
     if (clients.length > 0) {
       setClientsWithDebts(
-        clients.filter((client) =>
-          debts.map((item) => item.idUsuario).includes(client.id)
-        )
+        clients
+          .filter((client) =>
+            debts.map((item) => item.idUsuario).includes(client.id)
+          )
+          .sort((a, b) => (a.name > b.name ? 1 : -1))
       );
     }
   }, [clients, debts]);
@@ -71,6 +75,15 @@ export default function Home() {
           currency: "BRL",
           style: "currency",
         }).format(debtSelected.valor)
+      );
+      setCreatedAt(
+        Intl.DateTimeFormat("pt-br", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }).format(new Date(debtSelected.criado))
       );
     } else {
       clearForm();
@@ -91,8 +104,6 @@ export default function Home() {
         }
       })
       .catch((err) => {
-        console.log({ err });
-
         if (err.message && err.message === "Network Error") {
           setModal({ show: true, message: "Sem conexão" });
         }
@@ -245,6 +256,7 @@ export default function Home() {
     setUserId("");
     setReason("");
     setValue("");
+    setCreatedAt("");
 
     backToClientList();
   }
@@ -261,7 +273,9 @@ export default function Home() {
       <div className="side-bar">
         {listType === "client" ? (
           <>
-            <h2>Devedores</h2>
+            <h2 className="title">
+              <FaMoneyBillWave /> Devedores
+            </h2>
 
             {isLoading && <Loading />}
 
@@ -283,7 +297,9 @@ export default function Home() {
           </>
         ) : (
           <>
-            <h2>Dívidas</h2>
+            <h2 className="title">
+              <FaMoneyBillWave /> Dívidas
+            </h2>
             <div className="side-bar-list">
               <button className="go-back" onClick={() => backToClientList()}>
                 <BsArrowLeftShort className="icon" />
@@ -357,6 +373,10 @@ export default function Home() {
               <label className="input-error">Defina um valor válido</label>
             )}
           </div>
+
+          {createdAt !== "" && (
+            <p className="created-at">Criado em: {createdAt}</p>
+          )}
 
           <div className="box-actions">
             {debtSelected && (
