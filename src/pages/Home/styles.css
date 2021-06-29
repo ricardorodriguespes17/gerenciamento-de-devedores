@@ -205,7 +205,8 @@
 
   .home-page .side-bar {
     width: 100%;
-    height: fit-content;
+    max-height: 100%;
+    overflow: auto;
 
     grid-area: list;
   }
