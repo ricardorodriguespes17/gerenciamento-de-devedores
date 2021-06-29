@@ -116,6 +116,10 @@ export default function Home() {
   function onSave(e: FormEvent) {
     e.preventDefault();
 
+    if (isLoading) {
+      return;
+    }
+
     const values = checkInput();
 
     if (!values) {
@@ -123,6 +127,8 @@ export default function Home() {
     }
 
     const { idUsuario, valor, motivo } = values;
+
+    setIsLoading(true);
 
     api
       .put(`/divida/${debtSelected?._id}?uuid=${UUID}`, {
@@ -150,6 +156,12 @@ export default function Home() {
   function onDelete(id: number) {
     backToClientList();
 
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+
     api
       .delete(`/divida/${id}?uuid=${UUID}`)
       .then(() => {
@@ -170,6 +182,10 @@ export default function Home() {
   function onCreate(e: FormEvent) {
     e.preventDefault();
 
+    if (isLoading) {
+      return;
+    }
+
     const values = checkInput();
 
     if (!values) {
@@ -177,6 +193,8 @@ export default function Home() {
     }
 
     const { idUsuario, valor, motivo } = values;
+
+    setIsLoading(true);
 
     api
       .post(`/divida?uuid=${UUID}`, {
@@ -380,11 +398,17 @@ export default function Home() {
 
           <div className="box-actions">
             {debtSelected && (
-              <button type="button" onClick={() => onDelete(debtSelected._id)}>
+              <button
+                disabled={isLoading}
+                type="button"
+                onClick={() => onDelete(debtSelected._id)}
+              >
                 Excluir
               </button>
             )}
-            <button type="submit">{debtSelected ? "Salvar" : "Criar"}</button>
+            <button disabled={isLoading} type="submit">
+              {debtSelected ? "Salvar" : "Criar"}
+            </button>
           </div>
         </form>
       </main>
